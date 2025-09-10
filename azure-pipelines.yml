@@ -1,0 +1,35 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+# Three independent jobs (will run in parallel if you have parallel capacity)
+jobs:
+- job: Python
+  displayName: "Run hello.py"
+  steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+    - script: python hello.py
+      displayName: "Execute Python script"
+
+- job: Node
+  displayName: "Run app.js"
+  steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+    - script: node app.js
+      displayName: "Execute Node script"
+
+- job: Playwright
+  displayName: "Run Playwright smoke test"
+  steps:
+    - script: |
+        npm init -y
+        npm install @playwright/test
+        npx playwright install
+        npx playwright test playwright_test.spec.ts
+      displayName: "Install & run Playwright"
